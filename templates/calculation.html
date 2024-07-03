@@ -1,0 +1,118 @@
+{% extends "layout.html" %}
+{% block content %}
+<main>
+    <div class="content">
+        <h1>キーワードを入力してください</h1>
+        <form action="/calc" method="POST"">
+            <p>
+                <label><span>キーワードは？</span>
+                    <input type="text" name="keyword" placeholder="キーワード">
+                </label>
+            </p>
+
+            <div class="calc_btn">
+                <input type="submit" value='予測する'>
+            </div>
+        </form>
+        <canvas id="chart" height="200"></canvas>
+    </div>
+</main>
+{% if chart_exist %}
+<script>
+    const ctx = document.getElementById('chart');
+    var list_x={{item_x | tojson}};
+    var list_y={{item_y | tojson}};
+    const myChart = new Chart(ctx, {
+        // 散布図を表す
+        type: 'scatter',
+        // データ
+        data: {
+            // データ系列の設定
+            datasets: [{
+                // 凡例に表示する配列
+                label: 'sample data',
+                // 線を表示する
+                showLine: false,
+                // 実際のXYデータの配列
+                //     data: ((a) => {
+                //       const ret = [];
+                //       for(let x = 0; x <= 10; x++){
+                //         ret.push({ x: x, y: func(x, a) });
+                //       }
+                //       return ret;
+                //     })([ 0.1, 2, 1 ]),
+                //   }],
+                // },
+                data: (function hoge(){
+                    const ret = [];
+                    console.log(list_x);
+                    // [{% for item in item_ls %}]
+                    // ret=[]
+                    // ret.append({x:item_ls[0],y:item_ls[1]})
+                    // {% endfor %}
+                    for(let x = 0; x < list_x.length; x++){
+                        ret.push({ x: list_x[x], y: list_y[x] });
+                    }
+                    return ret;
+                })(),
+                // data : [{% for item in item_ls %}
+                //   {{item}},
+                // {% endfor %}]
+            }],
+        },
+        // グラフオプション
+        options: {
+            // レスポンシブ対応
+            responsive: true,
+            plugins: {
+                // グラフタイトルの設定
+                title: {
+                    text: 'Chart.js設定例',
+                    display: true,
+                    font: {
+                        size: 16,
+                    }
+                },
+                // 凡例の設定
+                legend: {
+                    display: true,
+                    position: 'top',
+                    align: 'center',
+                }
+            },
+            // x軸,y軸の設定
+            scales: {
+                x: {
+                    type: 'linear',
+                    display: true,
+                    position: 'bottom',
+                    min: 0,
+                    max: 7,
+                    title: {
+                        display: true,
+                        text: 'x',
+                        font: {
+                            size: 14,
+                        }
+                    },
+                    ticks: {
+                        stepSize: 2,
+                    }
+                },
+                y: {
+                    type: 'linear',
+                    display: true,
+                    title: {
+                        display: true,
+                        text: 'y',
+                        font: {
+                            size: 14,
+                        }
+                    },
+                }
+            },
+        },
+    });
+</script>
+{%endif%}
+{% endblock %}
